@@ -35,25 +35,42 @@ final class SegmentPool {
   private SegmentPool() {
   }
 
+  public static long totalPooledTakes = 0;
+  public static long totalPooledTakesDuration = 0;
+
+  public static long totalNewTakes = 0;
+  public static long totalNewTakesDuration = 0;
+
   static Segment take() {
     synchronized (SegmentPool.class) {
       if (next != null) {
+//        System.out.println("take");
+        totalPooledTakes++;
+        long start = System.nanoTime();
         Segment result = next;
         next = result.next;
         result.next = null;
         byteCount -= Segment.SIZE;
+        totalPooledTakesDuration  += System.nanoTime() - start;
         return result;
       }
     }
-    return new Segment(); // Pool is empty. Don't zero-fill while holding a lock.
+    totalNewTakes++;
+    long start = System.nanoTime();
+    Segment result = new Segment();
+    totalNewTakesDuration += System.nanoTime() - start;
+    return result; // Pool is empty. Don't zero-fill while holding a lock.
   }
 
   static void recycle(Segment segment) {
+//    System.out.println("recycle 1");
     if (segment.next != null || segment.prev != null) throw new IllegalArgumentException();
     if (segment.shared) return; // This segment cannot be recycled.
+//    System.out.println("recycle 2");
     synchronized (SegmentPool.class) {
       if (byteCount + Segment.SIZE > MAX_SIZE) return; // Pool is full.
       byteCount += Segment.SIZE;
+//      System.out.println("recycle 3");
       segment.next = next;
       segment.pos = segment.limit = 0;
       next = segment;

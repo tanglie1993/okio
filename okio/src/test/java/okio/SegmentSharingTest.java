@@ -190,4 +190,20 @@ public final class SegmentSharingTest {
     }
     return result;
   }
+
+  @Test public void zdsdsa() throws Exception {
+    Buffer bufferA = new Buffer();
+    for(int i =0; i < 10000; i++){
+      for (int j = 0; j < 100000; j++){
+        bufferA.writeShort(42);
+      }
+      for (int j = 0; j < 100000; j++){
+        bufferA.readShort();
+      }
+    }
+    System.out.println(""+(double) SegmentPool.totalPooledTakesDuration / (double) SegmentPool.totalPooledTakes);
+    System.out.println(""+SegmentPool.totalPooledTakes);
+    System.out.println(""+(double) SegmentPool.totalNewTakesDuration / (double) SegmentPool.totalNewTakes);
+    System.out.println(""+SegmentPool.totalNewTakes);
+  }
 }
