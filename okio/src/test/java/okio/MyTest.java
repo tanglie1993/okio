@@ -1,7 +1,9 @@
 package okio;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.*;
 
@@ -32,13 +34,13 @@ public class MyTest {
 
         long okioReadTime = 0;
         long ioReadTime = 0;
-        for(int i = 0; i < 2000; i++){
+        for(int i = 0; i < 200; i++){
             Buffer buffer = new Buffer();
             long startTime = System.currentTimeMillis();
-            buffer.readFrom(new FileInputStream("D:\\workspace\\sss.txt"));
-            String okioString = buffer.readUtf8();
+            BufferedSource source = Okio.buffer(Okio.source(new File("D:\\workspace\\sss.txt")));
+            source.readUtf8();
+            source.close();
             okioReadTime += (System.currentTimeMillis() - startTime);
-
 
 
             String file = "D:\\workspace\\sss.txt";
@@ -52,5 +54,39 @@ public class MyTest {
         }
         System.out.println(okioReadTime);
         System.out.println(ioReadTime);
+    }
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    @Test
+    public void writeEfficiencyTest() throws Exception {
+
+        long okioWriteTime = 0;
+        long ioWriteTime = 0;
+
+
+        BufferedSource source = Okio.buffer(Okio.source(new File("D:\\workspace\\sss.txt")));
+        String content = source.readUtf8();
+        source.close();
+
+        for(int i = 0; i < 20; i++){
+            long startTime = System.currentTimeMillis();
+            BufferedSink sink = Okio.buffer(Okio.sink(temporaryFolder.newFile()));
+            sink.writeUtf8(content);
+            sink.close();
+            okioWriteTime += (System.currentTimeMillis() - startTime);
+
+            startTime = System.currentTimeMillis();
+            FileWriter fw = new FileWriter("D:\\workspace\\ssss.txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.append(content);
+            bw.close();
+            fw.close();
+            ioWriteTime += (System.currentTimeMillis() - startTime);
+            new File("D:\\workspace\\ssss.txt").delete();
+        }
+        System.out.println(okioWriteTime);
+        System.out.println(ioWriteTime);
     }
 }
