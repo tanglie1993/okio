@@ -190,20 +190,4 @@ public final class SegmentSharingTest {
     }
     return result;
   }
-
-  @Test public void segmentPollTakeTimeTest() throws Exception {
-    Buffer bufferA = new Buffer();
-    StringBuffer stringBuffer = new StringBuffer();
-    for(int i = 0; i < 10000; i++){
-      stringBuffer.append("aaaa");
-    }
-    for(int i =0; i < 100000; i++){
-      bufferA.writeUtf8(stringBuffer.toString());
-      bufferA.readUtf8();
-    }
-    System.out.println(""+(double) SegmentPool.totalPooledTakesDuration / (double) SegmentPool.totalPooledTakes);
-    System.out.println(""+SegmentPool.totalPooledTakes);
-    System.out.println(""+(double) SegmentPool.totalNewTakesDuration / (double) SegmentPool.totalNewTakes);
-    System.out.println(""+SegmentPool.totalNewTakes);
-  }
 }

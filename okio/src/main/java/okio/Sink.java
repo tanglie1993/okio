@@ -48,7 +48,8 @@ import java.io.IOException;
  * Use {@link Okio#sink} to adapt an {@code OutputStream} to a sink. Use {@link
  * BufferedSink#outputStream} to adapt a sink to an {@code OutputStream}.
  */
-public interface Sink extends Closeable, Flushable {
+public interface
+Sink extends Closeable, Flushable {
   /** Removes {@code byteCount} bytes from {@code source} and appends them to this. */
   void write(Buffer source, long byteCount) throws IOException;
 
