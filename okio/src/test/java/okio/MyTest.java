@@ -1,5 +1,6 @@
 package okio;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
@@ -35,6 +36,7 @@ public class MyTest {
             Buffer buffer = new Buffer();
             long startTime = System.currentTimeMillis();
             buffer.readFrom(new FileInputStream("D:\\workspace\\sss.txt"));
+            String okioString = buffer.readUtf8();
             okioReadTime += (System.currentTimeMillis() - startTime);
 
 
@@ -42,7 +44,9 @@ public class MyTest {
             String file = "D:\\workspace\\sss.txt";
             startTime = System.currentTimeMillis();
             DataInputStream reader = new DataInputStream(new FileInputStream(file));
-            reader.read(new byte[reader.available()]);
+            byte[] bytes = new byte[reader.available()];
+            reader.read(bytes);
+            String ioString = new String(bytes);
             reader.close();
             ioReadTime += (System.currentTimeMillis() - startTime);
         }
